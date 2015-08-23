@@ -30,10 +30,10 @@ def gravarTweets(tweets):
 ############################################################################################
 
 #consumer key, consumer secret, access token, access secret.
-ckey="NPHt6sBkmvhQDJrWuqBFChw5B"
-csecret="IBDSMjwbI8Y1qmzp0lQNURNeppxnC7w8c6omntPNcyDE7hw8eQ"
-atoken="98141806-c8UvwlylW4GwIOXI9Qy7O1DPA77QV0AdAmU3R8VRw"
-asecret="DrflxuTFMehuPQrzkJ9mX5nvVQ4df30VCyVtWNwEBL1eb"
+ckey="x"
+csecret="x"
+atoken="x-x"
+asecret="x"
 
 auth = tweepy.OAuthHandler(ckey, csecret)
 auth.set_access_token(atoken, asecret)
