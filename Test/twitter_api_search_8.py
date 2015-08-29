@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
-
 import tweepy
 import math
-
 # RetirarStopWords
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-
-#ContarPalavras
-from collections import Counter
-
 import nltk
-
+# ContarPalavras
+from collections import Counter
+# Pontuacao
 import string
+# Regex
+import re
 
 ############################################################################################
 
@@ -25,39 +23,58 @@ class Tweet(object):
 
 ############################################################################################
 
+def RetirarLinks(text):
+
+	pattern = r'^https?:\/\/.*[\r\n]*'
+	_text = ''
+
+	for s in text.split(' '):
+		result = re.sub(pattern, 'aqui_tinha_um_link', s, flags=re.IGNORECASE)
+		_text += result + ' '
+
+	return _text.strip()
+
 def FiltrarPalavras(texto):
 
+	# seta codificacao do texto e passa tudo pra minusculas
 	texto = texto.encode('utf-8').lower()
 
+	# retira quebras de linha e tabulações
 	texto = texto.replace('\n',' ').replace('\t',' ').replace('  ', ' ')
-	texto = texto.replace('rt', '').replace('http', '')
 
-	pontos = ['.',',','!','?',';', '\'', '#', '@', ':', '/']
+	# retira sulfixo de retweets (RT)
+	texto = texto.replace('rt', '')
 
-	for p in pontos:
-		texto = texto.replace(p.encode('utf8'), '')
+	# retira links (http:// ... )
+	texto = RetirarLinks(texto)
 
+	#mapeamento dos principais caracteres acentuados
 	acentos = ['á','é','í','ó','ú','à','è','ì','ò','ù','ã','ẽ','ĩ','õ','ũ','â','ê','î','ô','û','ç']
 	s_acentos = ['a','e','i','o','u','a','e','i','o','u','a','e','i','o','u','a','e','i','o','u','c']
 
+	# substitui caracteres acentuados
 	for i in range(0, len(acentos)):
 		texto = texto.replace(acentos[i], s_acentos[i])
 
+	# retira pontuacao
 	for c in string.punctuation:
 		texto = texto.replace(c, ' ')
 
+	# variavel de retorno
 	retorno = ''
 
+	# retira as stopwords
 	for w in word_tokenize(texto):
-		if not w in stopwords.words('portuguese'):
-			w = ''.join(e for e in w if e.isalnum())
-			retorno += (w + ' ')
+		w = ''.join(e for e in w if e.isalnum())		# retira caracteres que não são alfanumericos
+		if not w in stopwords.words('portuguese'):		# se a palavra nao for stopword (em portugues)
+			retorno += (w + ' ')						# concatena a palavra na string de retorno
 
-	return retorno
+	# strip: retira espaços no inicio e fim da string
+	return retorno.strip()
 
 ############################################################################################
 
-def ContarPalavras(tweets):
+def ContarPalavras(tweets, count=5):
 	texto = ''
 	for tweet in tweets:
 		texto += tweet.text
@@ -69,7 +86,7 @@ def ContarPalavras(tweets):
 	palavras_mais = []
 
 	for i in contador.items():
-		if i[1] > 0:
+		if i[1] > count:
 			palavras_mais.append(i)
 
 	palavras_ord = sorted(palavras_mais, key=lambda s: s[1], reverse=True)
@@ -79,7 +96,7 @@ def ContarPalavras(tweets):
 
 ############################################################################################
 
-#consumer key, consumer secret, access token, access secret.
+# consumer key, consumer secret, access token, access secret.
 ckey="NPHt6sBkmvhQDJrWuqBFChw5B"
 csecret="IBDSMjwbI8Y1qmzp0lQNURNeppxnC7w8c6omntPNcyDE7hw8eQ"
 atoken="98141806-c8UvwlylW4GwIOXI9Qy7O1DPA77QV0AdAmU3R8VRw"
@@ -108,6 +125,8 @@ while valid == False:
 
 
 iteracoes = int( math.ceil( total / 100.0 ) )
+resto = total % 100
+
 max_id = 0
 tweetlist = []
 
@@ -115,9 +134,15 @@ for x in range(0, iteracoes):
 	print ('Iteracao: ' + str(x+1) + ' de ' + str(iteracoes))
 
 	if max_id > 0:
-		public_tweets = api.search(count='100', result_type=result_type, q=hashtag, lang='pt', max_id=max_id)
+		if x < (iteracoes-1) or resto == 0:
+			public_tweets = api.search(count='100', result_type=result_type, q=hashtag, lang='pt', max_id=max_id)
+		else:
+			public_tweets = api.search(count=str(resto), result_type=result_type, q=hashtag, lang='pt', max_id=max_id)
 	else:
-		public_tweets = api.search(count='100', result_type=result_type, q=hashtag, lang='pt',)
+		if x < (iteracoes-1) or resto == 0:
+			public_tweets = api.search(count='100', result_type=result_type, q=hashtag, lang='pt')
+		else:
+			public_tweets = api.search(count=str(resto), result_type=result_type, q=hashtag, lang='pt')
 
 	i = 0
 	for tweet in public_tweets:
@@ -131,3 +156,4 @@ for x in range(0, iteracoes):
 			max_id = (tweet.id - 1)
 
 ContarPalavras(tweetlist)
+print ('Qtd de tweets processados: ' + str(len(tweetlist)))
