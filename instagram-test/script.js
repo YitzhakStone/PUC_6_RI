@@ -30,7 +30,10 @@ $(document).ready(function () {
                 target.empty();
                 for (var key in photos) {
                     var photo = photos[key];
+                    target.append('<div>');
                     target.append('<a href="' + photo.link + '"><img src="' + photo.images.thumbnail.url + '"></a>')
+                    target.append(photo.caption.text);
+                    target.append('</div>');
                 }
             } else {
                 target.html("nothing found");

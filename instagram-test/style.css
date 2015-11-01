@@ -10,6 +10,6 @@ input[type="text"] {
     padding: 4px 8px;
 }
 img {
-    display: block;
-    float: left;
+    /*display: block;
+    float: left;*/
 }
