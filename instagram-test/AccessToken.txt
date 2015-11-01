@@ -1,0 +1,10 @@
+Registrar uma aplicação no Instagram.
+Editar a aplicação: 'Manage Clients' > 'Security' > Desmarque 'Disable Implicit OAuth'.
+
+Entra na url:
+
+https://instagram.com/oauth/authorize/?client_id=____&redirect_uri=____&response_type=token
+
+Vai ser redirecionado para a Redirect URI com o access token na URL. Exemplo:
+
+https://github.com/YitzhakStone/PUC_6_RI#access_token=975448585.61ec9f0.3686d8aa7c0049389e9d9fb0f877092e
