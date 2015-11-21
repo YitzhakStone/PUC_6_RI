@@ -116,5 +116,8 @@ def PolaridadeMedia(textos):
 		i += 1
 		pol += Polaridade(t)
 
+
+	if i == 0: return 0
+
 	mediapol = pol / i
 	return mediapol
